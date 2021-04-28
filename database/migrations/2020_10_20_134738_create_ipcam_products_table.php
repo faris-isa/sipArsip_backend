@@ -14,8 +14,19 @@ class CreateIpcamProductsTable extends Migration
     public function up()
     {
         Schema::create('ipcam_products', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements("id");
+            $table->unsignedBigInteger("product_id");
+            // $table->string("model_produk");
+            $table->string("max_resolution");
+            $table->string("lens");
+            $table->string("wdr");
+            $table->string("form_factor");
+            $table->string("protection");
+            $table->text("deskripsi_produk");
+            $table->string("foto_produk");
             $table->timestamps();
+
+            // $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

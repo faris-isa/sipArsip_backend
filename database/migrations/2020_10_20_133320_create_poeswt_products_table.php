@@ -14,8 +14,14 @@ class CreatePoeswtProductsTable extends Migration
     public function up()
     {
         Schema::create('poeswt_products', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements("id");
+            $table->unsignedBigInteger("product_id");
+            // $table->string("model_produk");
+            $table->text("deskripsi_produk");
+            $table->string("foto_produk");
             $table->timestamps();
+
+            // $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

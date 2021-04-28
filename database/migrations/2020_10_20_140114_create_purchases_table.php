@@ -14,8 +14,13 @@ class CreatePurchasesTable extends Migration
     public function up()
     {
         Schema::create('purchases', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->bigIncrements('id');
+            // $table->unsignedBigInteger('purchase_detail_id');
+            $table->enum("status",["terbeli", "belum"]);
+            $table->date('created_at');
+            $table->date('update_at');
+
+            // $table->foreign('purchase_detail_id')->references('id')->on('purchase_details');
         });
     }
 
