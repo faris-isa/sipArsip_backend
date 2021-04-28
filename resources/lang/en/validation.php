@@ -129,9 +129,20 @@ return [
     |
     */
 
+    // 'custom' => [
+    //     'attribute-name' => [
+    //         'rule-name' => 'custom-message',
+    //     ],
+    // ],
+
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'username' => [
+            'required' => 'Kolom username wajib diisi !',
+            'regex' => 'Format username salah !'
+        ],
+        'password' => [
+            'required' => 'Kolom password wajib diisi !',
+            'min' => 'Password minimal 8 karakter'
         ],
     ],
 
