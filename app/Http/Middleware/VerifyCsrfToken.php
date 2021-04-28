@@ -13,5 +13,10 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         //
+        'stripe/*',
+        // 'http://127.0.0.1/backend/api/products/status/*',
+        // 'http://127.0.0.1/backend/api/offers/status/*',
+        // 'https://127.0.0.1/backend/api/products/status/*',
+        // 'https://127.0.0.1/backend/api/offers/status/*',
     ];
 }
