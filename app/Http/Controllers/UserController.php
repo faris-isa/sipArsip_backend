@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 
@@ -52,12 +54,10 @@ class UserController extends Controller
             return response()->json(["status" => 500, "message" => "validasi error", "errors" => $validator->errors()]);
         }
 
-        // $url = "http://127.0.0.1/backend/upload/avatar/avatar.png";
-
         $userDataArray = array(
             "name" => $request->name,
             "username" => $request->username,
-            "password" => md5($request->password),
+            "password" => Hash::make($request->password),
             'photo' => $this->url,
         );
 
@@ -134,50 +134,5 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return response()->json($user);
-    }
-
-    public function userLogin(Request $request) {
-
-        $validator = Validator::make($request->all(), [
-            "username" => "required",
-            "password" => "required"
-        ]);
-
-        if($validator->fails()) {
-            return response()->json(["status" => 400, "validation_error" => $validator->errors()]);
-        }
-
-        // check if entered username exists in db
-        $username_status = User::where("username", $request->username)->first();
-
-        // if username exists then we will check password for the same email
-        if(!is_null($username_status)) {
-            $password_status = User::where("username", $request->username)->where("password", md5($request->password))->first();
-
-            // if password is correct
-            if(!is_null($password_status)) {
-                $user = $this->userDetail($request->username);
-
-                return response()->json(["status" => 200, "message" => "Login berhasil", "data" => $user]);
-            }
-
-            else {
-                // wrong password
-                return response()->json(["status" => 404, "message" => "Gagal login, periksa username dan password !"]);
-            }
-        }
-
-        else {
-            // username didnt registered
-            return response()->json(["status" => 404, "message" => "Gagal login, periksa username dan password !"]);
-        }
-    }
-
-    public function userDetail($username) {
-        $user = array();
-        if($username != "") {
-            $user  =  User::where("username", $username)->first();
-            return $user;
-        }
     }
 }
