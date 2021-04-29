@@ -17,15 +17,15 @@ class CreateProductsTable extends Migration
             $table->bigIncrements("id");
             // $table->string("nama_produk");
             $table->string("model_produk");
-            $table->unsignedBigInteger("product_type_id");
+            $table->foreignId("product_type_id");
+            $table->foreignId("product_detail_id");
             // $table->enum("type_products",["poeswitch", "nvr", "ipcam"]);
             $table->enum("status",["ongoing", "deprecated"]);
             $table->integer("harga_satuan");
             $table->timestamps();
 
-            // $table->foreign('detail_product_id')->references('id')->on('ipcam_products');
-            // $table->foreign('detail_product_id')->references('id')->on('nvr_products');
-            // $table->foreign('detail_product_id')->references('id')->on('poeswt_products');
+            $table->foreign('product_type_id')->references('id')->on('product_type');
+            $table->foreign('product_detail_id')->references('id')->on('product_detail');
 
         });
     }

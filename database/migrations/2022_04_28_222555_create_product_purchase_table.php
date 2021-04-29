@@ -15,8 +15,8 @@ class CreateProductPurchaseTable extends Migration
     {
         Schema::create('product_purchase', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('purchase_id');
+            $table->foreignId('product_id');
+            $table->foreignId('purchase_id');
             $table->string('serial_number');
             $table->date('tanggal_beli');
             $table->integer('masa_garansi');
@@ -24,8 +24,8 @@ class CreateProductPurchaseTable extends Migration
             $table->string('lokasi');
             $table->timestamps();
 
-            // $table->foreign('product_id')->references('id')->on('products');
-            // $table->foreign('purchase_id')->references('id')->on('purchases');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('purchase_id')->references('id')->on('purchases');
 
         });
     }
@@ -37,6 +37,9 @@ class CreateProductPurchaseTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_product');
+        Schema::dropIfExists('purchase_product', function (Blueprint $table){
+            $table->dropForeign('product_id');
+            $table->dropForeign('purchase_id');
+        });
     }
 }

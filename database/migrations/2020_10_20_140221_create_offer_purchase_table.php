@@ -15,13 +15,15 @@ class CreateOfferPurchaseTable extends Migration
     {
         Schema::create('offer_purchase', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('offer_id');
-            $table->unsignedBigInteger('purchase_id')->nullable();
+            $table->foreignId('offer_id');
+            $table->foreignId('purchase_id')->nullable();
             $table->enum('status',['penawaran', 'pembelian','selesai']);
-            $table->timestamps();
+            $table->date('created_at');
+            $table->date('purchase_at')->nullable();;
+            $table->date('done_at')->nullable();;
 
-            // $table->foreign('purchase_id')->references('id')->on('purchases');
-            // $table->foreign('offer_id')->references('id')->on('offers');
+            $table->foreign('purchase_id')->references('id')->on('purchases');
+            $table->foreign('offer_id')->references('id')->on('offers');
         });
     }
 
@@ -32,6 +34,9 @@ class CreateOfferPurchaseTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('offer_purchase');
+        Schema::dropIfExists('offer_purchase', function (Blueprint $table){
+            $table->dropForeign('purchase_id');
+            $table->dropForeign('offer_id');
+        });
     }
 }

@@ -14,12 +14,13 @@ class CreateProductDetailTable extends Migration
     public function up()
     {
         Schema::create('product_detail', function (Blueprint $table) {
-            $table->bigIncrement();
-            $table->unsignedBigInteger("product_id");
-            $table->unsignedBigInteger("product_manufacture_id");
+            $table->bigIncrements('id');
+            $table->foreignId("product_manufacture_id");
             $table->text("spesifikasi");
             $table->string("foto_produk");
             $table->timestamps();
+
+            $table->foreign('product_manufacture_id')->references('id')->on('product_manufacture');
         });
     }
 
@@ -30,6 +31,8 @@ class CreateProductDetailTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_detail');
+        Schema::dropIfExists('product_detail', function (Blueprint $table){
+            $table->dropForeign('product_manufacture_id');
+        });
     }
 }

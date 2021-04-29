@@ -14,8 +14,9 @@ class CreateProductManufactureTable extends Migration
     public function up()
     {
         Schema::create('product_manufacture', function (Blueprint $table) {
-            $table->bigIncrements();
+            $table->bigIncrements('id');
             $table->string('name',50);
+            $table->string('code_name', 3);
             $table->timestamps();
         });
     }

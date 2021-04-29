@@ -15,16 +15,15 @@ class CreateOfferProductTable extends Migration
     {
         Schema::create('offer_product', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('offer_id');
-            $table->unsignedBigInteger('product_id');
+            $table->foreignId('product_id');
+            $table->foreignId('offer_id');
             $table->integer('qty');
             $table->integer('harga');
             // $table->integer('disc');
-            // $table->timestamps();
-            $table->date('created_at');
-            $table->date('update_at');
+            $table->timestamps();
 
-            // $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('offer_id')->references('id')->on('offers');
         });
     }
 
@@ -35,6 +34,9 @@ class CreateOfferProductTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('offer_product');
+        Schema::dropIfExists('offer_product', function (Blueprint $table){
+            $table->dropForeign('product_id');
+            $table->dropForeign('offer_id');
+        });
     }
 }
