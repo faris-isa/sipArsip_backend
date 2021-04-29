@@ -14,7 +14,11 @@ class CreateProductDetailTable extends Migration
     public function up()
     {
         Schema::create('product_detail', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrement();
+            $table->unsignedBigInteger("product_id");
+            $table->unsignedBigInteger("product_manufacture_id");
+            $table->text("spesifikasi");
+            $table->string("foto_produk");
             $table->timestamps();
         });
     }
