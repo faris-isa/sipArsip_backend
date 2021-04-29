@@ -12,22 +12,18 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama_produk',
         'model_produk',
-        'type_products',
+        'product_type_id',
+        'status',
         'harga_satuan',
     ];
 
-    public function poeswtproduct(){
-        return $this->hasOne(PoeswtProduct::class);
+    public function detail(){
+        return $this->hasOne('App\Models\ProductDetail');
     }
 
-    public function nvrproduct(){
-        return $this->hasMany(NvrProduct::class);
-    }
-
-    public function ipcamproduct(){
-        return $this->hasMany(IpcamProduct::class);
+    public function type(){
+        return $this->belongsTo('App\Models\ProductType');
     }
 
     public function offers(){

@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ProductManufacture extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'code_name',
+    ];
+
+    public function detail(){
+        return $this->hasMany('App\Models\ProductDetail');
+    }
 }
