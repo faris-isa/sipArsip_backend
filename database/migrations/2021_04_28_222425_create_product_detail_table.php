@@ -15,11 +15,13 @@ class CreateProductDetailTable extends Migration
     {
         Schema::create('product_detail', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId("product_id");
             $table->foreignId("product_manufacture_id");
             $table->text("spesifikasi");
             $table->string("foto_produk");
             $table->timestamps();
 
+            $table->foreign('product_id')->references('id')->on('products');
             $table->foreign('product_manufacture_id')->references('id')->on('product_manufacture');
         });
     }
