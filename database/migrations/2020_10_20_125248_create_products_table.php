@@ -17,8 +17,8 @@ class CreateProductsTable extends Migration
             $table->bigIncrements("id");
             // $table->string("nama_produk");
             $table->string("model_produk");
-            // $table->unsignedBigInteger("detail_product_id");
-            $table->enum("type_products",["poeswitch", "nvr", "ipcam"]);
+            $table->unsignedBigInteger("product_type_id");
+            // $table->enum("type_products",["poeswitch", "nvr", "ipcam"]);
             $table->enum("status",["ongoing", "deprecated"]);
             $table->integer("harga_satuan");
             $table->timestamps();
