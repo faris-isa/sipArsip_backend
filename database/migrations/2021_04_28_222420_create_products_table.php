@@ -23,7 +23,7 @@ class CreateProductsTable extends Migration
             $table->integer("harga_satuan");
             $table->timestamps();
 
-            $table->foreign('product_type_id')->references('id')->on('product_type');
+            $table->foreign('product_type_id')->references('id')->on('product_types');
 
         });
     }
