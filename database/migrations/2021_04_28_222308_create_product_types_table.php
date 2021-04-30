@@ -17,8 +17,8 @@ class CreateProductTypesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name', 30);
             $table->string('code_name', 3);
-            $table->string('satuan_hitung');
-            $table->string('code_satuan_hitung');
+            $table->string('satuan_hitung',20);
+            $table->string('code_satuan_hitung',10);
             $table->timestamps();
         });
     }
