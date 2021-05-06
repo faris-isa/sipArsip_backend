@@ -23,7 +23,7 @@ class Product extends Model
     }
 
     public function type(){
-        return $this->belongsTo('App\Models\ProductType');
+        return $this->belongsTo('App\Models\ProductType', 'product_type_id');
     }
 
     public function offers(){

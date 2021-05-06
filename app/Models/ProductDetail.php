@@ -21,6 +21,6 @@ class ProductDetail extends Model
     }
 
     public function manufacture(){
-        return $this->belongsTo('App\Models\ProductManufacture');
+        return $this->belongsTo('App\Models\ProductManufacture', 'product_manufacture_id');
     }
 }
