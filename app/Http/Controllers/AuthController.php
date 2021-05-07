@@ -20,9 +20,10 @@ class AuthController extends Controller
     public function login(Request $request){
         if (!Auth::attempt($request->only('username', 'password'))) {
             return response()->json([
-            'message' => 'Invalid login details'
-                       ], 400);
-                   }
+                "status" => 400,
+                'message' => 'Invalid login details'
+                ]);
+            }
 
         // check if entered username exists in db
         $user = User::where('username', $request->username)->first();
