@@ -19,8 +19,8 @@ class CreateOfferPurchaseTable extends Migration
             $table->foreignId('purchase_id')->nullable();
             $table->enum('status',['penawaran', 'pembelian','selesai']);
             $table->date('created_at');
-            $table->date('purchase_at')->nullable();;
-            $table->date('done_at')->nullable();;
+            $table->date('purchase_at')->nullable();
+            $table->date('done_at')->nullable();
 
             $table->foreign('purchase_id')->references('id')->on('purchases');
             $table->foreign('offer_id')->references('id')->on('offers');
