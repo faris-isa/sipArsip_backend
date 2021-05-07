@@ -3,11 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+// use App\Http\Controllers\UserController;
 // use App\Http\Controllers\ProductController;
 // use App\Http\Controllers\PurchaseController;
 // use App\Http\Controllers\OfferController;
 // use App\Http\Controllers\OfferPurchaseController;
-// use App\Http\Controllers\UserController;
 // use App\Http\Controllers\OfferDetailController;
 // use App\Http\Controllers\OfferStatusController;
 // use App\Http\Controllers\ProductStatusController;
@@ -27,25 +27,28 @@ use App\Http\Controllers\AuthController;
 //protected routes
 Route::group(['middleware' => ['auth:sanctum']],  function () {
     //AUTH
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
+    // Route For Data
     Route::apiResources([
-            'products' => ProductController::class,
-            'purchases' => PurchaseController::class,
-            'offers' => OfferController::class,
+        'products' => ProductController::class,
+        'purchases' => PurchaseController::class,
+        'offers' => OfferController::class,
         'offpurs' => OfferPurchaseController::class,
         'users' => UserController::class,
-        // 'offersdet' => OfferDetailController::class,
-    ], ['except' => ['create', 'edit', 'destroy']]);
-    Route::get("user/{username}", [UserController::class, 'userDetail']);
-    Route::patch('products/status/{id}', [ProductController::class, 'status']);
-    Route::patch('offers/status/{id}', [OfferController::class, 'status']);
-    Route::get("serials/", [PurchaseController::class, 'getSerials']);
-    Route::post("monthly/", [PurchaseController::class, 'getPurchase']);
-    Route::get("offers/export/{id}", [OfferController::class, 'exportWord']);
-    Route::get("graphs/export", [OfferController::class, 'exportGraph']);
+        'types'=> ProductTypeController::class,
+        'manufactures'=> ProductManufactureController::class,
+        'locations'=> PurchaseLocationController::class,
+    ], ['except' => ['create', 'edit']]);
+
+    Route::patch('products/status/{id}', 'ProductController@status');
+    Route::post('offer-status/{id}', 'OfferController@status');
+    Route::get("serials", 'PurchaseController@getSerials');
+    Route::post("monthly", 'PurchaseController@getPurchase');
+    Route::get("offers/export/{id}", 'OfferController@exportWord');
+    Route::get("graphs/export", 'OfferController@exportGraph');
 });
 
 //unprotected cause login
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/welcome', [AuthController::class, 'welcome'])->name('login');
+Route::post('/login', 'AuthController@login')->name('auth.login');
+Route::get('/401', 'AuthController@welcome')->name('login');
