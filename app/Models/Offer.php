@@ -25,7 +25,8 @@ class Offer extends Model
     }
 
     public function purchases(){
-        return $this->belongsToMany(Purchase::class)->using(OfferPurchase::class)
+        return $this->belongsToMany(Purchase::class)
+        // ->using(OfferPurchase::class)
         ->withPivot('status', 'created_at', 'purchase_at', 'done_at');
     }
 }
