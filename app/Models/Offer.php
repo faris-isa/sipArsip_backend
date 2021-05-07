@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Product;
+use App\Models\Purchase;
+use App\Models\OfferPurchase;
+
 class Offer extends Model
 {
     use HasFactory;
@@ -15,14 +19,13 @@ class Offer extends Model
     ];
 
     public function products(){
-        return $this->belongsToMany('App\Models\Product')
+        return $this->belongsToMany(Product::class)
         ->withPivot('qty', 'harga')
         ->withTimestamps();
     }
 
     public function purchases(){
-        return $this->belongsToMany('App\Models\Purchase')
-        ->withPivot('status')
-        ->withTimestamps();
+        return $this->belongsToMany(Purchase::class)->using(OfferPurchase::class)
+        ->withPivot('status', 'created_at', 'purchase_at', 'done_at');
     }
 }
