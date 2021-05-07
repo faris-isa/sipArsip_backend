@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\Purchase;
 use App\Models\Offer;
+use App\Models\ProductPurchase;
 
 class PurchaseController extends Controller
 {
@@ -18,23 +19,11 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        // $purchases = Purchase::get();
-
-        // foreach (Purchase::all() as $purchases) {
-        //     $purchases->tawaran = $purchases->offers();
-        // }
-
-        // $purchases = Purchase::join('offer_purchase', 'offer_purchase.purchase_id', '=', 'purchases.id')
-        // ->join('offers', 'offers.id', '=', 'offer_purchase.offer_id')
-        // ->get(['purchases.id','offers.nama_pembeli', 'purchases.status']);
-
         $purchases = Purchase::with('offers')
         ->with('products')
         ->get();
 
         return response()->json($purchases);
-        // return $purchases->toJSon();
-
     }
 
     /**
@@ -74,20 +63,23 @@ class PurchaseController extends Controller
             'tanggal_beli' => $array[$x]->tanggal,
             'masa_garansi' => $jangka,
             'tanggal_selesai' => $tanggal_habis,
-            'lokasi' => $array[$x]->lokasi]);
+            'purchase_location_id' => $array[$x]->lokasi]);
         };
 
         $purchase->updateOffers = DB::table('offer_purchase')->where('purchase_id', $purchase->id)->update(
-            ['status' => 'selesai'],
+            [
+                'status' => 'selesai',
+                'done_at' => date('Y-m-d'),
+            ]
         );
         $purchase->updateStatus = DB::table('purchases')->where('id', $purchase->id)->update(
             ['status' => 'terbeli',
-            'updated_at' => date('Y-m-d')
+            'update_at' => date('Y-m-d')
             ]
         );
 
         if(!is_null($purchase)) {
-            return response()->json(["status" => 201, "message" => "Akun berhasil diupdate !", "data" => $purchase]);
+            return response()->json(["status" => 201, "message" => "Pembelian berhasil disimpan !", "data" => $purchase]);
         } else {
             return response()->json(["status" => 404, "message" => "Gagal diubah, periksa kembali !"]);
         }
@@ -150,21 +142,15 @@ class PurchaseController extends Controller
     }
 
     public function getSerials(){
-        $query = DB::table('product_purchase')->get();
-
-        return response()->json($query);
-    }
-    public function getSerial($id){
-        $query = DB::table('product_purchase')
-        ->join('products', 'products.id', '=', 'product_purchase.product_id')
-        ->join('purchases', 'purchases.id', '=', 'product_purchase.purchase_id')
-        ->where('product_purchase.id', $id)
-        ->select('product_purchase.*')
+        // $query = DB::table('product_purchase')->get();
+        $query = ProductPurchase::with('location')
         ->get();
 
         return response()->json($query);
     }
+
     public function getPurchase(Request $request){
+
 
         $tahun = $request->tahun;
         $bulan = $request->bulan;
@@ -173,17 +159,12 @@ class PurchaseController extends Controller
         $length = count($tanggal);
 
         for ($i = 1; $i<=$length; $i++){
-            // $tanggalReal = $tahun.'-'.$bulan.'-'.$i;
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereDate('updated_at', $tahun.'-'.$bulan.'-'.$i)
-            // ->whereDate('updated_at', $tahun.'-'.$bulan.'-'.$i)
+            ->whereDate('update_at', $tahun.'-'.$bulan.'-'.$i)
             ->count();
             array_push($counter, $query);
         }
-
-        // foreach ($date as $tanggal){
-        // }
 
         return response()->json($counter);
     }
