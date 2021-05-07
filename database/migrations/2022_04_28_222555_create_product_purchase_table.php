@@ -21,11 +21,12 @@ class CreateProductPurchaseTable extends Migration
             $table->date('tanggal_beli');
             $table->integer('masa_garansi');
             $table->date('tanggal_selesai');
-            $table->string('lokasi');
+            $table->foreignId('purchase_location_id');
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products');
             $table->foreign('purchase_id')->references('id')->on('purchases');
+            $table->foreign('purchase_location_id')->references('id')->on('purchase_locations');
 
         });
     }
