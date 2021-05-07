@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Offer;
-// use App\Models\OfferPurchase;
 use App\Models\Purchase;
 use App\Models\Product;
+use App\Models\OfferPurchase;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,8 +26,7 @@ class OfferController extends Controller
         $offers = Offer::with('purchases')
         ->with('products')
         ->get();
-        // $offers = Offer::all();
-        // return response()->json($offer);
+
         return response()->json($offers);
 
     }
@@ -77,9 +76,14 @@ class OfferController extends Controller
             'harga' => $array[$x]->harga_satuan]);
         };
 
-        $offer->purchases()->attach($offer,['purchase_id' => null,'status' => 'penawaran', 'created_at' => date('Y-m-d')]);
+        $offer->purchases()->attach($offer->id,[
+            'purchase_id' => null,
+            'status' => 'penawaran',
+            'created_at' => date('Y-m-d'),
+            'purchase_at' => null,
+            'done_at' => null
+            ]);
 
-        // return response()->json($offer);
         if(!is_null($offer->id)) {
             return response()->json(["status" => 201, "message" => "Offer berhasil didaftarkan !", "penawaran" => $offer]);
         } else {
@@ -149,21 +153,34 @@ class OfferController extends Controller
 
     public function status(Request $request, $id)
     {
+        $validator = Validator::make($request->all(), [
+            "status" => "required",
+            "status_offpur" => "required",
+        ]);
+
+        if($validator->fails()) {
+            return response()->json(["status" => 500, "message" => "validasi error", "errors" => $validator->errors()]);
+        }
+
         $offer = Offer::find($id);
         $offer->status = $request->status;
         $offer->save();
 
-        $status_offpur = $request->status_offpur;
+        $status = $request->status_offpur;
 
-        if ($status_offpur == "pembelian"){
+        if ($request->status_offpur == "pembelian"){
             $purchase = new Purchase;
-            $purchase->status = "belum";
+            $purchase->status = 'belum';
+            $purchase->created_at = date('Y-m-d');
             $purchase->save();
 
             $offer->updatePurchase = DB::table('offer_purchase')
             ->where('offer_id', $offer->id)
             ->update(
-                ['purchase_id'=>$purchase->id]
+                [
+                    'purchase_id'=>$purchase->id,
+                    'purchase_at'=>date('Y-m-d'),
+                ]
             );
         }
 
@@ -184,11 +201,9 @@ class OfferController extends Controller
     {
         $offer = Offer::find($id);
         $detail = $offer->products()->get();
-        // $offer->purchase = $offer->purchases()->get();
 
         $template = new TemplateProcessor('./public/word-template/penawaran.docx');
 
-        // $lmao = json_encode($offer);
 
         $allId = [];
 
@@ -208,31 +223,16 @@ class OfferController extends Controller
             ];
         };
 
-        //getMainProduct
-        foreach($allId as $item){
-            $product = Product::findOrFail($item);
-            $val_type[] = $product->type_products;
-        };
 
         //getSubProduct
         $productData = [];
-        for ($i = 0; $i < count($val_type); $i++) {
-            if ($val_type[$i] == "poeswitch"){
-                $productdet = Product::where('products.id', $allId[$i])
-                    ->join('poeswt_products', 'products.id', '=', 'poeswt_products.product_id')
-                    ->first();
-                array_push($productData, $productdet);
-            } else if ($val_type[$i] == "ipcam"){
-                $productdet = Product::where('products.id', $allId[$i])
-                ->join('ipcam_products', 'products.id', '=', 'ipcam_products.product_id')
-                ->first();
-                array_push($productData, $productdet);
-            } else if ($val_type[$i] == "nvr"){
-                $productdet = Product::where('products.id', $allId[$i])
-                ->join('nvr_products', 'products.id', '=', 'nvr_products.product_id')
-                ->first();
-                array_push($productData, $productdet);
-            }
+        for ($i = 0; $i < count($allId); $i++) {
+            // $productdet = Product::find($allId[$i])->with('detail')->get();
+            $productdet = Product::where('products.id', $allId[$i])
+            ->join('product_details', 'product_details.product_id', '=', 'products.id')
+            ->join('product_manufactures', 'product_details.product_manufacture_id', '=', 'product_manufactures.id')
+            ->first();
+            array_push($productData, $productdet);
         };
 
         // $valuesProduct = [];
@@ -241,10 +241,10 @@ class OfferController extends Controller
             $valuesProduct[] = [
                 'productId' => $i+1,
                 'model_produk' => $productData[$i]->model_produk,
-                'deskripsi_produk'=>$productData[$i]->deskripsi_produk,
-                // 'foto_produk' =>
+                'manufacture' => $productData[$i]->name,
+                'deskripsi_produk'=>$productData[$i]->spesifikasi,
             ];
-        }
+        };
 
         $year = date('y');
         $yearBig = date('Y');
@@ -258,7 +258,7 @@ class OfferController extends Controller
             $tanggalan[] = $i;
         };
 
-        $terakhir = end($tanggalan)-1;
+        $terakhir = end($tanggalan);
 
         $firstDate = $yearBig.'-'.$month.'-'.$tanggalan[0];
         $lastDate = $yearBig.'-'.$month.'-'.$terakhir;
@@ -315,7 +315,7 @@ class OfferController extends Controller
             //query getPurchase
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereYear('updated_at', $i)
+            ->whereYear('update_at', $i)
             ->count();
             array_push($series, $query);
             //query getProduct
@@ -329,8 +329,8 @@ class OfferController extends Controller
             // $tanggalReal = $tahun.'-'.$bulan.'-'.$i;
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereYear('updated_at', $yearBig)
-            ->whereMonth('updated_at', $i)
+            ->whereYear('update_at', $yearBig)
+            ->whereMonth('update_at', $i)
             ->count();
             array_push($series2, $query);
         }
@@ -340,7 +340,7 @@ class OfferController extends Controller
             // $tanggalReal = $tahun.'-'.$bulan.'-'.$i;
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereDate('updated_at', $yearBig.'-'.$month.'-'.$i)
+            ->whereDate('update_at', $yearBig.'-'.$month.'-'.$i)
             // ->whereDate('updated_at', $tahun.'-'.$bulan.'-'.$i)
             ->count();
             array_push($series3, $query);
