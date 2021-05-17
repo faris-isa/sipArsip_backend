@@ -17,8 +17,9 @@ class CreatePurchasesTable extends Migration
             $table->bigIncrements('id');
             // $table->unsignedBigInteger('purchase_detail_id');
             $table->enum("status",["terbeli", "belum"]);
-            $table->date('created_at');
-            $table->date('update_at')->nullable();
+            $table->timestamps();
+            // $table->date('created_at');
+            // $table->date('updated_at')->nullable();
 
             // $table->foreign('purchase_detail_id')->references('id')->on('purchase_details');
         });
