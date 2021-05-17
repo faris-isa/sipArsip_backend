@@ -27,7 +27,7 @@ use App\Http\Controllers\AuthController;
 //protected routes
 Route::group(['middleware' => ['auth:sanctum']],  function () {
     //AUTH
-    Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
     // Route For Data
     Route::apiResources([
