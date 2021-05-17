@@ -47,6 +47,7 @@ class PurchaseController extends Controller
         $detail = $request->purchase_detail;
         $array = json_decode($detail);
         $number = count($array);
+        $timestamp = date("Y-m-d H:i:s");
 
         $purchase = Purchase::findOrFail($request->purchase_id);
 
@@ -63,18 +64,20 @@ class PurchaseController extends Controller
             'tanggal_beli' => $array[$x]->tanggal,
             'masa_garansi' => $jangka,
             'tanggal_selesai' => $tanggal_habis,
-            'purchase_location_id' => $array[$x]->lokasi]);
+            'purchase_location_id' => $array[$x]->lokasi,
+            ]);
         };
 
         $purchase->updateOffers = DB::table('offer_purchase')->where('purchase_id', $purchase->id)->update(
             [
                 'status' => 'selesai',
-                'done_at' => date('Y-m-d'),
+                'done_at' => $timestamp,
             ]
         );
+
         $purchase->updateStatus = DB::table('purchases')->where('id', $purchase->id)->update(
             ['status' => 'terbeli',
-            'update_at' => date('Y-m-d')
+            'updated_at' => $timestamp
             ]
         );
 
@@ -161,7 +164,7 @@ class PurchaseController extends Controller
         for ($i = 1; $i<=$length; $i++){
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereDate('update_at', $tahun.'-'.$bulan.'-'.$i)
+            ->whereDate('updated_at', $tahun.'-'.$bulan.'-'.$i)
             ->count();
             array_push($counter, $query);
         }

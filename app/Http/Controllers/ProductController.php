@@ -17,8 +17,8 @@ use App\Models\ProductType;
 class ProductController extends Controller
 {
 
-    public $url = "https://m3117063.api.isabot.site/upload/product/";
-    // private $url = "http://127.0.0.1/backend/upload/product/";
+    // public $url = "https://m3117063.api.isabot.site/upload/product/";
+    private $url = "http://127.0.0.1/backend/upload/product/";
     /**
      * Display a listing of the resource.
      *

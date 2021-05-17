@@ -79,8 +79,8 @@ class OfferController extends Controller
         $offer->purchases()->attach($offer->id,[
             'purchase_id' => null,
             'status' => 'penawaran',
-            'created_at' => date('Y-m-d'),
-            'purchase_at' => null,
+            'created_at' => date("Y-m-d H:i:s"),
+            'purchased_at' => null,
             'done_at' => null
             ]);
 
@@ -171,7 +171,6 @@ class OfferController extends Controller
         if ($request->status_offpur == "pembelian"){
             $purchase = new Purchase;
             $purchase->status = 'belum';
-            $purchase->created_at = date('Y-m-d');
             $purchase->save();
 
             $offer->updatePurchase = DB::table('offer_purchase')
@@ -179,16 +178,21 @@ class OfferController extends Controller
             ->update(
                 [
                     'purchase_id'=>$purchase->id,
-                    'purchase_at'=>date('Y-m-d'),
+                    'status' => $request->status_offpur,
+                    'purchased_at'=> date("Y-m-d H:i:s"),
+                ]
+            );
+        } else if ($request->status_offpur == "selesai"){
+
+            $offer->updatePurchase = DB::table('offer_purchase')
+            ->where('offer_id', $offer->id)
+            ->update(
+                [
+                    'status' => $request->status_offpur,
+                    'done_at'=> date("Y-m-d H:i:s"),
                 ]
             );
         }
-
-        $offer->updatePurchase = DB::table('offer_purchase')
-        ->where('offer_id', $offer->id)
-        ->update(
-            ['status' => $request->status_offpur]
-        );
 
         if(!is_null($offer)) {
             return response()->json(["status" => 201, "message" => "Penawaran berhasil diupdate !", "data" => $offer]);
@@ -315,7 +319,7 @@ class OfferController extends Controller
             //query getPurchase
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereYear('update_at', $i)
+            ->whereYear('updated_at', $i)
             ->count();
             array_push($series, $query);
             //query getProduct
@@ -329,8 +333,8 @@ class OfferController extends Controller
             // $tanggalReal = $tahun.'-'.$bulan.'-'.$i;
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereYear('update_at', $yearBig)
-            ->whereMonth('update_at', $i)
+            ->whereYear('updated_at', $yearBig)
+            ->whereMonth('updated_at', $i)
             ->count();
             array_push($series2, $query);
         }
@@ -340,7 +344,7 @@ class OfferController extends Controller
             // $tanggalReal = $tahun.'-'.$bulan.'-'.$i;
             $query = DB::table('purchases')
             ->where('status', 'terbeli')
-            ->whereDate('update_at', $yearBig.'-'.$month.'-'.$i)
+            ->whereDate('updated_at', $yearBig.'-'.$month.'-'.$i)
             // ->whereDate('updated_at', $tahun.'-'.$bulan.'-'.$i)
             ->count();
             array_push($series3, $query);

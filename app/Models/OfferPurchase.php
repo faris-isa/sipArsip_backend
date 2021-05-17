@@ -21,7 +21,7 @@ class OfferPurchase extends Pivot
     protected $fillable = [
         'status',
         'created_at',
-        'purchase_at',
+        'purchased_at',
         'done_at',
     ];
 }

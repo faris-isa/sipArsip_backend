@@ -13,7 +13,7 @@ class Purchase extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     protected $fillable = [
         'status',
@@ -21,12 +21,12 @@ class Purchase extends Model
 
     public function offers(){
         return $this->belongsToMany(Offer::class)->using(OfferPurchase::class)
-        ->withPivot('status', 'created_at', 'purchase_at', 'done_at');
+        ->withPivot('status', 'created_at', 'purchased_at', 'done_at');
     }
 
     public function products(){
         return $this->belongsToMany(Product::class)->using(ProductPurchase::class)
-        ->withPivot('serial_number', 'tanggal_beli', 'masa_garansi', 'purchase_location_id', 'tanggal_selesai');
-        // ->withTimestamps();
+        ->withPivot('serial_number', 'tanggal_beli', 'masa_garansi', 'purchase_location_id', 'tanggal_selesai')
+        ->withTimestamps();
     }
 }
